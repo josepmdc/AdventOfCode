@@ -27,3 +27,21 @@ func GetData(fileName string) []int {
 	}
 	return data
 }
+
+func GetDataString(fileName string) []string {
+	var data []string
+
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println(err)
+		return data
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		data = append(data, scanner.Text())
+	}
+	return data
+}
