@@ -3,8 +3,10 @@ package util
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func GetData(fileName string) []int {
@@ -44,4 +46,12 @@ func GetDataString(fileName string) []string {
 		data = append(data, scanner.Text())
 	}
 	return data
+}
+
+func GetDataByBlocks(fileName string) []string {
+	dat, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		panic(err)
+	}
+	return strings.Split(strings.TrimSpace(string(dat)), "\n\n")
 }
