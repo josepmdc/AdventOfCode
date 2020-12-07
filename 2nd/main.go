@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	data := util.GetDataString("2nd/input")
+	data := util.GetData("2nd/input")
 	part1(data)
 	part2(data)
 }

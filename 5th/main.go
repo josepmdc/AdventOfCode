@@ -7,7 +7,7 @@ import (
 
 func main() {
 	//testSeats := []string{"FBFBBFFRLR", "BFFFBBFRRR", "FFFBBBFRRR", "BBFFBBFRLL"}
-	seats := util.GetDataString("5th/input")
+	seats := util.GetData("5th/input")
 	part1(seats)
 	part2(seats)
 }

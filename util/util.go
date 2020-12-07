@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func GetData(fileName string) []int {
+func GetDataInt(fileName string) []int {
 	var data []int
 
 	file, err := os.Open(fileName)
@@ -30,7 +30,7 @@ func GetData(fileName string) []int {
 	return data
 }
 
-func GetDataString(fileName string) []string {
+func GetData(fileName string) []string {
 	var data []string
 
 	file, err := os.Open(fileName)

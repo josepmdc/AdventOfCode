@@ -11,7 +11,7 @@ type Move struct {
 }
 
 func main() {
-	data := util.GetDataString("3rd/input")
+	data := util.GetData("3rd/input")
 	part1(data)
 	part2(data)
 }

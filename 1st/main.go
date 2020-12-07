@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	var data = util.GetData("1st/input")
+	var data = util.GetDataInt("1st/input")
 	part1(data)
 	part2(data)
 }
