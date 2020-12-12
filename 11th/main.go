@@ -23,7 +23,7 @@ func part1(data []string) {
 	ySize := len(data)
 	for {
 		tmpSeatMap := nextRound(seatMap, xSize, ySize)
-		if reflect.DeepEqual(seatMap, tmpSeatMap) {
+		if reflect.DeepEqual(tmpSeatMap, seatMap) {
 			fmt.Printf("Part 1: %d\n", countOccupiedSeats(seatMap))
 			return
 		}
@@ -31,7 +31,7 @@ func part1(data []string) {
 	}
 }
 
-func countOccupiedSeats(seatMap map[string]string) int {
+func countOccupiedSeats(seatMap map[coordinate]string) int {
 	count := 0
 	for _, state := range seatMap {
 		if state == "#" {
@@ -41,39 +41,34 @@ func countOccupiedSeats(seatMap map[string]string) int {
 	return count
 }
 
-func nextRound(seatMap map[string]string, xSize int, ySize int) map[string]string {
+func nextRound(seatMap map[coordinate]string, xSize int, ySize int) map[coordinate]string {
 	adjecentCoordinates := getAdjecentCoordinates()
-	tmpSeatMap := make(map[string]string)
+	tmpSeatMap := make(map[coordinate]string)
 	for k, v := range seatMap {
-		tmpSeatMap[k] = v
-	}
-	for x := 0; x < xSize; x++ {
-		for y := 0; y < ySize; y++ {
-			currentCoordinate := getCoordinates(x, y)
-			occupiedCount := 0
-			for _, adjecent := range adjecentCoordinates {
-				adjecentCoordinate := getCoordinates(x+adjecent.x, y+adjecent.y)
+		occupiedCount := 0
+		for _, adjecent := range adjecentCoordinates {
+			adjecentCoordinate := coordinate{x: k.x + adjecent.x, y: k.y + adjecent.y}
 
-				if seatMap[adjecentCoordinate] == "#" {
-					occupiedCount++
-				}
-			}
-			if seatMap[currentCoordinate] == "#" && occupiedCount >= 4 {
-				tmpSeatMap[currentCoordinate] = "L"
-			}
-			if seatMap[currentCoordinate] == "L" && occupiedCount == 0 {
-				tmpSeatMap[currentCoordinate] = "#"
+			if seatMap[adjecentCoordinate] == "#" {
+				occupiedCount++
 			}
 		}
+		if seatMap[k] == "#" && occupiedCount >= 4 {
+			v = "L"
+		}
+		if seatMap[k] == "L" && occupiedCount == 0 {
+			v = "#"
+		}
+		tmpSeatMap[k] = v
 	}
 	return tmpSeatMap
 }
 
-func printSeatMap(seatMap map[string]string, xSize int, ySize int) {
+func printSeatMap(seatMap map[coordinate]string, xSize int, ySize int) {
 	for x := 0; x < xSize; x++ {
 		for y := 0; y < ySize; y++ {
-			coordinate := getCoordinates(x, y)
-			fmt.Print(seatMap[coordinate])
+			c := coordinate{x: x, y: y}
+			fmt.Print(seatMap[c])
 		}
 		fmt.Println()
 	}
@@ -81,16 +76,7 @@ func printSeatMap(seatMap map[string]string, xSize int, ySize int) {
 }
 
 func getAdjecentCoordinates() []coordinate {
-	return []coordinate{
-		{0, -1},
-		{0, 1},
-		{-1, -1},
-		{-1, 0},
-		{-1, 1},
-		{1, -1},
-		{1, 0},
-		{1, 1},
-	}
+	return []coordinate{{0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}, {1, -1}, {1, 0}, {1, 1}}
 }
 
 func getCoordinates(x int, y int) string {
@@ -101,11 +87,11 @@ func part2(data []string) {
 
 }
 
-func generateSeatMap(data []string) map[string]string {
-	seats := make(map[string]string)
+func generateSeatMap(data []string) map[coordinate]string {
+	seats := make(map[coordinate]string)
 	for x, row := range data {
 		for y, seat := range row {
-			coordinates := getCoordinates(x, y)
+			coordinates := coordinate{x: x, y: y}
 			seats[coordinates] = string(seat)
 		}
 	}
