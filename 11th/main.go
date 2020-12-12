@@ -11,24 +11,69 @@ type coordinate struct {
 	y int
 }
 
+type adjMethod func(x, y int, adj coordinate) coordinate
+
 func main() {
 	data := util.GetData("11th/input")
-	part1(data)
-	part2(data)
-}
-
-func part1(data []string) {
 	seatMap := generateSeatMap(data)
 	xSize := len(data[0])
 	ySize := len(data)
+	part1(seatMap, xSize, ySize)
+	part2(seatMap, xSize, ySize)
+}
+
+func part1(seatMap map[coordinate]string, xSize, ySize int) {
+	adjMethod := func(x, y int, adj coordinate) coordinate {
+		return coordinate{x: x + adj.x, y: y + adj.y}
+	}
+	result := runSimulation(seatMap, xSize, ySize, 4, adjMethod)
+	fmt.Printf("Part 1: %d\n", result)
+}
+
+func part2(seatMap map[coordinate]string, xSize, ySize int) {
+	adjMethod := func(x, y int, adj coordinate) coordinate {
+		adjCoordinate := coordinate{x: x + adj.x, y: y + adj.y}
+		for seatMap[adjCoordinate] == "." && seatMap[adjCoordinate] != "" {
+			adjCoordinate.x += adj.x
+			adjCoordinate.y += adj.y
+		}
+		return adjCoordinate
+	}
+	result := runSimulation(seatMap, xSize, ySize, 5, adjMethod)
+	fmt.Printf("Part 2: %d\n", result)
+}
+
+func runSimulation(seatMap map[coordinate]string, xSize, ySize, occupiedThreshold int, adjMethod adjMethod) int {
 	for {
-		tmpSeatMap := nextRound(seatMap, xSize, ySize)
+		tmpSeatMap := nextRound(seatMap, xSize, ySize, occupiedThreshold, adjMethod)
 		if reflect.DeepEqual(tmpSeatMap, seatMap) {
-			fmt.Printf("Part 1: %d\n", countOccupiedSeats(seatMap))
-			return
+			return countOccupiedSeats(seatMap)
 		}
 		seatMap = tmpSeatMap
 	}
+}
+
+func nextRound(seatMap map[coordinate]string, xSize, ySize, occupiedThreshold int, adjMethod adjMethod) map[coordinate]string {
+	adjecentCoordinates := []coordinate{{0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}, {1, -1}, {1, 0}, {1, 1}}
+	tmpSeatMap := make(map[coordinate]string)
+
+	for k, v := range seatMap {
+		occupiedCount := 0
+		for _, adjecent := range adjecentCoordinates {
+			adjecentCoordinate := adjMethod(k.x, k.y, adjecent)
+			if seatMap[adjecentCoordinate] == "#" {
+				occupiedCount++
+			}
+		}
+		if seatMap[k] == "#" && occupiedCount >= occupiedThreshold {
+			v = "L"
+		}
+		if seatMap[k] == "L" && occupiedCount == 0 {
+			v = "#"
+		}
+		tmpSeatMap[k] = v
+	}
+	return tmpSeatMap
 }
 
 func countOccupiedSeats(seatMap map[coordinate]string) int {
@@ -41,29 +86,6 @@ func countOccupiedSeats(seatMap map[coordinate]string) int {
 	return count
 }
 
-func nextRound(seatMap map[coordinate]string, xSize int, ySize int) map[coordinate]string {
-	adjecentCoordinates := getAdjecentCoordinates()
-	tmpSeatMap := make(map[coordinate]string)
-	for k, v := range seatMap {
-		occupiedCount := 0
-		for _, adjecent := range adjecentCoordinates {
-			adjecentCoordinate := coordinate{x: k.x + adjecent.x, y: k.y + adjecent.y}
-
-			if seatMap[adjecentCoordinate] == "#" {
-				occupiedCount++
-			}
-		}
-		if seatMap[k] == "#" && occupiedCount >= 4 {
-			v = "L"
-		}
-		if seatMap[k] == "L" && occupiedCount == 0 {
-			v = "#"
-		}
-		tmpSeatMap[k] = v
-	}
-	return tmpSeatMap
-}
-
 func printSeatMap(seatMap map[coordinate]string, xSize int, ySize int) {
 	for x := 0; x < xSize; x++ {
 		for y := 0; y < ySize; y++ {
@@ -73,18 +95,6 @@ func printSeatMap(seatMap map[coordinate]string, xSize int, ySize int) {
 		fmt.Println()
 	}
 	fmt.Println()
-}
-
-func getAdjecentCoordinates() []coordinate {
-	return []coordinate{{0, -1}, {0, 1}, {-1, -1}, {-1, 0}, {-1, 1}, {1, -1}, {1, 0}, {1, 1}}
-}
-
-func getCoordinates(x int, y int) string {
-	return fmt.Sprintf("%d,%d", x, y)
-}
-
-func part2(data []string) {
-
 }
 
 func generateSeatMap(data []string) map[coordinate]string {
