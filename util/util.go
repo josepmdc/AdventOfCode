@@ -55,3 +55,11 @@ func GetDataByBlocks(fileName string) []string {
 	}
 	return strings.Split(strings.TrimSpace(string(dat)), "\n\n")
 }
+
+func MustAtoi(v string) int {
+	i, err := strconv.Atoi(v)
+	if err != nil {
+		panic(err)
+	}
+	return i
+}
